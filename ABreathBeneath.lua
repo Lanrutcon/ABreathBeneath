@@ -125,11 +125,21 @@ local function retextureNameplates()
 			frame.castBar:Hide();
 
 			castBar:SetScript("OnShow", function(self)
+				self:SetAlpha(0);
 				frame.castBar:Show();
 				frame.castBar:SetMinMaxValues(self:GetMinMaxValues())
-				self:SetAlpha(0);
-				local spell, _, spellName = UnitCastingInfo("target");
+				local spell, _, spellName, _, _, _, _, _, isNotInterruptible = UnitCastingInfo("target");
+				--if spell is nil, then the target is channeling
+				if(not spell) then
+					spell, _, spellName, _, _, _, _, isNotInterruptible = UnitChannelInfo("target");
+				end
 				frame.castBar.spellName:SetText(spellName);
+
+				if(not isNotInterruptible) then
+					frame.castBar:SetStatusBarColor(1,1,0.2,0.9);
+				else
+					frame.castBar:SetStatusBarColor(0.6,0.6,0.6,0.9);
+				end
 			end)
 			
 			castBar:SetScript("OnHide", function(self)
